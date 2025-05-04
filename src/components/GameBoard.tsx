@@ -33,12 +33,18 @@ const GameBoard: React.FC<GameBoardProps> = ({ boardSize, speed }) => {
 
   const directionRef = useRef<Direction>(direction);
   const gameLoopRef = useRef<number | null>(null);
+  const boardRef = useRef<HTMLDivElement>(null);
 
   // Initialize high score from localStorage
   useEffect(() => {
     const savedHighScore = localStorage.getItem("snakeHighScore");
     if (savedHighScore) {
       setHighScore(parseInt(savedHighScore));
+    }
+    
+    // Focus the board element when the game starts
+    if (boardRef.current) {
+      boardRef.current.focus();
     }
   }, []);
 
@@ -60,6 +66,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ boardSize, speed }) => {
   // Initialize game
   useEffect(() => {
     setFood(generateFood());
+    
+    // Focus the board element
+    if (boardRef.current) {
+      boardRef.current.focus();
+    }
+    
     return () => {
       if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
     };
@@ -128,12 +140,23 @@ const GameBoard: React.FC<GameBoardProps> = ({ boardSize, speed }) => {
     setIsGameOver(false);
     setScore(0);
     if (isPaused) setIsPaused(false);
+    
+    // Re-focus the board
+    if (boardRef.current) {
+      boardRef.current.focus();
+    }
+    
     startGameLoop();
   };
 
   // Toggle pause
   const togglePause = () => {
     setIsPaused(prev => !prev);
+    
+    // Re-focus the board when unpausing
+    if (boardRef.current && isPaused) {
+      boardRef.current.focus();
+    }
   };
 
   // Game loop
@@ -284,11 +307,13 @@ const GameBoard: React.FC<GameBoardProps> = ({ boardSize, speed }) => {
       <GameScore score={score} highScore={highScore} />
       
       <div
-        className="relative bg-card rounded-lg border border-muted overflow-hidden"
+        ref={boardRef}
+        className="relative bg-card rounded-lg border border-muted overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary"
         style={{
           width: boardSize * cellSize,
           height: boardSize * cellSize,
         }}
+        tabIndex={0} // Make the board focusable
       >
         {renderBoard()}
         
