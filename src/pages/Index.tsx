@@ -4,7 +4,7 @@ import GameBoard from "@/components/GameBoard";
 import { useToast } from "@/components/ui/use-toast";
 
 const BOARD_SIZE = 20; // Grid size
-const GAME_SPEED = 8; // Cells per second
+const GAME_SPEED = 15; // Increased from 8 to 15 cells per second
 
 const Index = () => {
   const { toast } = useToast();
